@@ -40,3 +40,27 @@
 .read-the-docs {
   color: #888;
 }
+.bg-gradient {
+  background: linear-gradient(135deg, #89f7fe, #66a6ff);
+  min-height: 100vh;
+  padding: 1rem;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.temp.big {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+.chip {
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+
+.aqi-good { background: #c8facc; color: #006600; }
+.aqi-mod { background: #fff5cc; color: #996600; }
+.aqi-usg { background: #ffe0b3; color: #cc6600; }
+.aqi-unh { background: #ffcccc; color: #cc0000; }
+.aqi-vunh { background: #e0b3ff; color: #660099; }
+.aqi-haz { background: #999; color: #fff; }

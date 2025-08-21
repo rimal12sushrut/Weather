@@ -1,40 +1,105 @@
-:root { --bg:#f7f8fb; --card:#fff; --muted:#667085; --border:#e5e7eb; --ink:#0f172a; }
-*{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,Segoe UI,Roboto,Arial}
-.wrap{max-width:960px;margin:0 auto;padding:24px}
-.top{display:flex;gap:12px;justify-content:space-between;align-items:flex-end;margin-bottom:12px}
-.top h1{margin:0;font-size:28px}
-.muted{color:var(--muted)} .small{font-size:12px}
-.actions button, .row button, .fav .pill button, .search .dropdown button {cursor:pointer}
-.search{position:relative;margin:12px 0}
-.search input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:#fff}
-.search .dropdown{position:absolute;top:100%;left:0;right:0;background:#fff;border:1px solid var(--border);border-radius:12px;margin-top:6px;overflow:hidden;z-index:10}
-.search .dropdown button{display:block;width:100%;text-align:left;padding:10px 14px;border:0;background:#fff}
-.search .dropdown button:hover{background:#f7f7f7}
-.fav{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 16px}
-.pill{display:flex;gap:6px;align-items:center;background:#fff;border:1px solid var(--border);padding:6px 10px;border-radius:999px}
-.pill .link{background:transparent;border:0;text-decoration:underline}
-.pill .x{border:0;background:transparent;color:#999}
-.error{background:#fff1f2;color:#b91c1c;border:1px solid #fecaca;padding:10px 12px;border-radius:12px;margin:8px 0}
-.loading{padding:16px;color:#555}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
-.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px}
-.row{display:flex;justify-content:space-between;align-items:flex-start}
-.title{font-size:22px;font-weight:600}
-.title-sm{font-weight:600}
-.temp{margin-top:8px;font-size:48px;font-weight:700}
-.aqi{margin-top:8px}
-.hours{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
-.hour{background:#f8fafc;border:1px solid var(--border);border-radius:12px;padding:10px}
-.h-temp{font-size:20px;font-weight:600}
-.ad{margin:18px 0;background:#fff;border:2px dashed var(--border);border-radius:16px;padding:16px;text-align:center;color:#6b7280}
-.foot{margin-top:24px;display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--border);padding-top:12px}
-.aqi{display:flex;gap:6px;align-items:center}
-.aqi span{padding:2px 8px;border-radius:999px;font-size:12px}
-.aqi-na{background:#e5e7eb;color:#374151}
-.aqi-good{background:#dcfce7;color:#166534}
-.aqi-mod{background:#fef9c3;color:#854d0e}
-.aqi-usg{background:#ffedd5;color:#9a3412}
-.aqi-unh{background:#fee2e2;color:#991b1b}
-.aqi-vunh{background:#ede9fe;color:#5b21b6}
-.aqi-haz{background:#ffe4e6;color:#9f1239}
-@media (max-width: 800px){ .grid{grid-template-columns:1fr} }
+/* Root styling */
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+  color: #222;
+}
+
+/* Background */
+.bg-gradient {
+  background: linear-gradient(135deg, #5eb8ff, #b3e6ff, #ffffff);
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+/* Headings */
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #004080;
+  margin-bottom: 1rem;
+}
+
+/* Weather card */
+.card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  padding: 1.5rem;
+  margin: 1rem auto;
+  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+  max-width: 700px;
+}
+
+/* Temperature display */
+.temp.big {
+  font-size: 3rem;
+  font-weight: bold;
+  color: #003366;
+}
+
+/* Chips (AQI, labels) */
+.chip {
+  padding: 4px 10px;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin: 2px;
+  display: inline-block;
+}
+
+/* AQI colors */
+.aqi-good { background: #c8facc; color: #006600; }
+.aqi-mod { background: #fff5cc; color: #996600; }
+.aqi-usg { background: #ffe0b3; color: #cc6600; }
+.aqi-unh { background: #ffcccc; color: #cc0000; }
+.aqi-vunh { background: #e0b3ff; color: #660099; }
+.aqi-haz { background: #999; color: #fff; }
+
+/* Hourly forecast grid */
+.hours {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.hour {
+  background: #f5faff;
+  padding: 0.75rem;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 70px;
+  box-shadow: 0px 3px 6px rgba(0,0,0,0.1);
+}
+
+/* Daily forecast */
+.days {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.day {
+  background: #fdfdfd;
+  padding: 1rem;
+  border-radius: 12px;
+  text-align: center;
+  flex: 1;
+  min-width: 100px;
+  box-shadow: 0px 3px 6px rgba(0,0,0,0.05);
+}
+
+/* Muted text */
+.muted {
+  font-size: 0.8rem;
+  color: #555;
+}
+
+.small {
+  font-size: 0.75rem;
+}

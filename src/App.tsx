@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 
-/** ---------- Types (minimal, only what we use) ---------- */
+/** ---------- Types ---------- */
 interface GeoResult {
   name: string;
   latitude: number;
   longitude: number;
 }
-
 interface ForecastCurrent {
   time: string;
   temperature_2m: number;
@@ -14,18 +13,22 @@ interface ForecastCurrent {
   relative_humidity_2m: number;
   wind_speed_10m: number;
 }
-
 interface ForecastHourly {
   time: string[];
   temperature_2m: number[];
   precipitation_probability: number[];
 }
-
+interface ForecastDaily {
+  time: string[];
+  temperature_2m_max: number[];
+  temperature_2m_min: number[];
+  precipitation_probability_max: number[];
+}
 interface ForecastResponse {
   current: ForecastCurrent;
   hourly: ForecastHourly;
+  daily: ForecastDaily;
 }
-
 interface AirHourly {
   time: string[];
   us_aqi?: number[];
@@ -54,7 +57,7 @@ function aqiLabel(aqi?: number) {
   return { text: `Hazardous (${aqi})`, cls: "aqi aqi-haz" };
 }
 
-/** small localStorage state hook */
+/** localStorage state hook */
 function useLocal<T>(key: string, initial: T) {
   const [val, setVal] = useState<T>(() => {
     try {
@@ -92,14 +95,14 @@ export default function App() {
   const abortRef = useRef<AbortController | null>(null);
 
   const pageTitle = useMemo(
-    () => (city ? `${city.name} Weather & AQI` : "Weather & AQI – Nepal"),
+    () => (city ? `${city.name} – Panigham Weather` : "Panigham – Weather & AQI"),
     [city]
   );
   useEffect(() => {
     document.title = pageTitle;
   }, [pageTitle]);
 
-  /** ---- Search suggestions (Open-Meteo geocoding) ---- */
+  /** ---- Search suggestions ---- */
   useEffect(() => {
     if (query.trim().length < 2) {
       setSugs([]);
@@ -120,11 +123,9 @@ export default function App() {
           latitude: Number(x.latitude),
           longitude: Number(x.longitude),
         }));
-        // also suggest from defaults
         const localMatch = DEFAULT_CITIES.filter((c) =>
           c.name.toLowerCase().includes(query.toLowerCase())
         );
-        // de-dup by name
         const seen = new Set<string>();
         const merged = [...localMatch, ...list].filter((c) => {
           const k = c.name.toLowerCase();
@@ -143,15 +144,12 @@ export default function App() {
     setErr("");
     setLoading(true);
     try {
-      // Weather
-      const wUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m&hourly=temperature_2m,precipitation_probability&timezone=auto`;
+      const wUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m&hourly=temperature_2m,precipitation_probability&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=auto`;
       const w: ForecastResponse = await fetch(wUrl).then((r) => r.json());
 
-      // Air quality (US AQI)
       const aUrl = `https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&hourly=us_aqi,pm10,pm2_5&timezone=auto`;
       const a: AirResponse = await fetch(aUrl).then((r) => r.json());
 
-      // find AQI at the current time index if available
       let aqi: number | null = null;
       if (a?.hourly?.time && w?.current?.time && a.hourly.us_aqi) {
         const idx = a.hourly.time.indexOf(w.current.time);
@@ -201,18 +199,18 @@ export default function App() {
   /** ---- UI ---- */
   const AQIChip = ({ value }: { value?: number | null }) => {
     const { text, cls } = aqiLabel(value ?? undefined);
-    return <span className={cls}>{text}</span>;
+    return <span className={`chip ${cls}`}>{text}</span>;
   };
 
   return (
-    <div className="wrap">
+    <div className="wrap bg-gradient">
       <header className="top">
         <div>
-          <h1>🌤 Nepal Weather Pro</h1>
-          <p className="muted">Accurate weather & air quality. No API keys.</p>
+          <h1>🌤 Panigham</h1>
+          <p className="muted">Your trusted weather & air quality companion</p>
         </div>
         <div className="actions">
-          <button onClick={useMyLocation}>Use my location</button>
+          <button onClick={useMyLocation}>📍 Use my location</button>
         </div>
       </header>
 
@@ -221,7 +219,7 @@ export default function App() {
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search city (e.g., Kathmandu, Pokhara)"
+          placeholder="🔍 Search city (e.g., Kathmandu, Pokhara)"
         />
         {!!sugs.length && (
           <div className="dropdown">
@@ -251,9 +249,10 @@ export default function App() {
       {err && <div className="error">{err}</div>}
       {loading && <div className="loading">Loading…</div>}
 
-      {/* Current */}
+      {/* Current + Hourly + Daily */}
       {city && !loading && (
         <div className="grid">
+          {/* Current */}
           <div className="card">
             <div className="row">
               <div>
@@ -262,35 +261,76 @@ export default function App() {
               </div>
               <button onClick={addFav}>＋ Favorite</button>
             </div>
-            <div className="temp">
+            <div className="temp big">
               {Math.round(city.weather.current.temperature_2m)}°C
             </div>
             <div className="muted">
-              Feels {Math.round(city.weather.current.apparent_temperature)}°C · Humidity{" "}
-              {city.weather.current.relative_humidity_2m}% · Wind{" "}
+              Feels {Math.round(city.weather.current.apparent_temperature)}°C · 💧{" "}
+              {city.weather.current.relative_humidity_2m}% · 💨{" "}
               {city.weather.current.wind_speed_10m} m/s
             </div>
             <div className="aqi">
-              Air Quality: <AQIChip value={city.aqi} />
+              🌱 Air Quality: <AQIChip value={city.aqi} />
             </div>
           </div>
 
+          {/* Hourly */}
           <div className="card">
             <div className="row">
-              <div className="title-sm">Today</div>
+              <div className="title-sm">Today (Hourly)</div>
               <div className="muted small">Local time: {new Date().toLocaleString()}</div>
             </div>
-            <div className="hours">
-              {city.weather.hourly.time.slice(0, 6).map((t, i) => (
-                <div className="hour" key={t}>
-                  <div className="muted small">
-                    {new Date(t).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          <div className="hours">
+            {(() => {
+              // Find index of the current hour
+              const now = new Date();
+              const currentHourIndex = city.weather.hourly.time.findIndex((t: string) => {
+                return new Date(t).getHours() === now.getHours();
+              });
+
+              // Slice next 6 hours starting from current index
+              const nextHours = city.weather.hourly.time.slice(currentHourIndex, currentHourIndex + 6);
+
+              return nextHours.map((t: string, i: number) => {
+                const localTime = new Date(t).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  hour12: true,
+                });
+
+                return (
+                  <div className="hour" key={t}>
+                    <div className="muted small">{localTime}</div>
+                    <div className="h-temp">
+                      {Math.round(city.weather.hourly.temperature_2m[currentHourIndex + i])}°
+                    </div>
+                    <div className="muted small">
+                      🌧 {city.weather.hourly.precipitation_probability[currentHourIndex + i] ?? 0}%
+                    </div>
                   </div>
-                  <div className="h-temp">
-                    {Math.round(city.weather.hourly.temperature_2m[i])}°
+                );
+              });
+            })()}
+          </div>
+           
+        
+        </div>
+
+          {/* Daily */}
+          <div className="card">
+            <div className="title-sm">Next 7 Days</div>
+            <div className="days">
+              {city.weather.daily.time.slice(0, 7).map((t, i) => (
+                <div className="day" key={t}>
+                  <div className="muted small">
+                    {new Date(t).toLocaleDateString(undefined, { weekday: "short", month: "short", day: "numeric" })}
+                  </div>
+                  <div>
+                    🌡 {Math.round(city.weather.daily.temperature_2m_min[i])}° /{" "}
+                    {Math.round(city.weather.daily.temperature_2m_max[i])}°
                   </div>
                   <div className="muted small">
-                    Rain {city.weather.hourly.precipitation_probability[i] ?? 0}%
+                    🌧 {city.weather.daily.precipitation_probability_max[i] ?? 0}%
                   </div>
                 </div>
               ))}
@@ -299,12 +339,9 @@ export default function App() {
         </div>
       )}
 
-      {/* Monetization placeholders (replace with AdSense/your ads later) */}
-      <div className="ad">Ad slot — place your AdSense snippet here</div>
-
       <footer className="foot">
-        <div>© {new Date().getFullYear()} Nepal Weather Pro</div>
-        <div className="muted small">Commercial use allowed (see MIT note below).</div>
+        <div>© {new Date().getFullYear()} Panigham</div>
+        <div className="muted small">NEPAL · MIT Licensed</div>
       </footer>
     </div>
   );
