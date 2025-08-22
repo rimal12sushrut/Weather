@@ -151,9 +151,26 @@ export default function App() {
       const a: AirResponse = await fetch(aUrl).then((r) => r.json());
 
       let aqi: number | null = null;
-      if (a?.hourly?.time && w?.current?.time && a.hourly.us_aqi) {
-        const idx = a.hourly.time.indexOf(w.current.time);
-        if (idx >= 0) aqi = a.hourly.us_aqi[idx] ?? null;
+     // Check that the necessary arrays exist and are not empty
+      if (a?.hourly?.time?.length && w?.current?.time && a.hourly.us_aqi) {
+        // Get the current weather time as a number
+        const now = new Date(w.current.time).getTime();
+        let closestIdx = -1;
+        let minDiff = Infinity;
+
+        // Loop through each available AQI time to find the closest one
+        a.hourly.time.forEach((t, i) => {
+          const diff = Math.abs(now - new Date(t).getTime());
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestIdx = i;
+          }
+        });
+
+        // Use the AQI value from the closest time found
+        if (closestIdx !== -1) {
+          aqi = a.hourly.us_aqi[closestIdx] ?? null;
+        }
       }
 
       setCity({ name, lat, lon, weather: w, air: a, aqi });

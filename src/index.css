@@ -1,105 +1,326 @@
-/* Root styling */
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
-  font-family: "Segoe UI", "Helvetica Neue", sans-serif;
+/* ---------- Base ---------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+body {
+  background: linear-gradient(to bottom, #e3f2fd, #f9f9f9);
   color: #222;
-}
-
-/* Background */
-.bg-gradient {
-  background: linear-gradient(135deg, #5eb8ff, #b3e6ff, #ffffff);
   min-height: 100vh;
-  padding: 1rem;
-}
-
-/* Headings */
-h1 {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: #004080;
-  margin-bottom: 1rem;
-}
-
-/* Weather card */
-.card {
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 16px;
-  padding: 1.5rem;
-  margin: 1rem auto;
-  box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
-  max-width: 700px;
-}
-
-/* Temperature display */
-.temp.big {
-  font-size: 3rem;
-  font-weight: bold;
-  color: #003366;
-}
-
-/* Chips (AQI, labels) */
-.chip {
-  padding: 4px 10px;
-  border-radius: 10px;
-  font-weight: bold;
-  font-size: 0.9rem;
-  margin: 2px;
-  display: inline-block;
-}
-
-/* AQI colors */
-.aqi-good { background: #c8facc; color: #006600; }
-.aqi-mod { background: #fff5cc; color: #996600; }
-.aqi-usg { background: #ffe0b3; color: #cc6600; }
-.aqi-unh { background: #ffcccc; color: #cc0000; }
-.aqi-vunh { background: #e0b3ff; color: #660099; }
-.aqi-haz { background: #999; color: #fff; }
-
-/* Hourly forecast grid */
-.hours {
   display: flex;
   justify-content: center;
-  gap: 1rem;
-  margin-top: 1rem;
+  overflow-x: hidden;
 }
 
-.hour {
-  background: #f5faff;
-  padding: 0.75rem;
-  border-radius: 12px;
-  text-align: center;
-  min-width: 70px;
-  box-shadow: 0px 3px 6px rgba(0,0,0,0.1);
+.wrap {
+  width: 100%;
+  max-width: 800px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  animation: fadeIn 0.8s ease-in-out;
 }
 
-/* Daily forecast */
-.days {
+/* ---------- Animations ---------- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes popIn {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ---------- Header ---------- */
+.top {
   display: flex;
   justify-content: space-between;
-  margin-top: 1.5rem;
+  align-items: center;
+}
+
+.top h1 {
+  font-size: 1.8rem;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.top p.muted {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+/* ---------- Search ---------- */
+.search {
+  position: relative;
+  animation: fadeIn 0.9s ease;
+}
+.search input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+.search input:focus {
+  box-shadow: 0 0 8px rgba(25, 118, 210, 0.4);
+  outline: none;
+}
+
+.dropdown {
+  position: absolute;
+  top: 110%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+  overflow: hidden;
+  z-index: 10;
+  animation: slideDown 0.3s ease;
+}
+.dropdown button {
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.dropdown button:hover {
+  background: #f5f5f5;
+}
+
+/* ---------- Favorites ---------- */
+.fav {
+  display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
-
-.day {
-  background: #fdfdfd;
-  padding: 1rem;
-  border-radius: 12px;
-  text-align: center;
-  flex: 1;
-  min-width: 100px;
-  box-shadow: 0px 3px 6px rgba(0,0,0,0.05);
+.pill {
+  display: flex;
+  align-items: center;
+  background: #e3f2fd;
+  border-radius: 999px;
+  padding: 0.3rem 0.6rem;
+  animation: popIn 0.3s ease;
+  transition: transform 0.2s ease;
 }
-
-/* Muted text */
-.muted {
-  font-size: 0.8rem;
+.pill:hover {
+  transform: scale(1.05);
+}
+.pill .link {
+  background: none;
+  border: none;
+  font-size: 0.9rem;
+  color: #1976d2;
+  cursor: pointer;
+  margin-right: 0.3rem;
+}
+.pill .x {
+  background: none;
+  border: none;
+  font-weight: bold;
   color: #555;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+.pill .x:hover {
+  color: #d32f2f;
 }
 
-.small {
-  font-size: 0.75rem;
+/* ---------- Grid Layout ---------- */
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+@media (min-width: 700px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ---------- Cards ---------- */
+.card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  animation: fadeIn 0.6s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+.card .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.title {
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+.title-sm {
+  font-weight: 600;
+}
+.temp.big {
+  font-size: 2.2rem;
+  font-weight: bold;
+}
+
+/* ---------- AQI ---------- */
+.chip {
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: transform 0.2s ease;
+}
+.chip:hover {
+  transform: scale(1.1);
+}
+.aqi-na { background: #e0e0e0; color: #555; }
+.aqi-good { background: #a5d6a7; color: #1b5e20; }
+.aqi-mod { background: #fff59d; color: #827717; }
+.aqi-usg { background: #ffcc80; color: #e65100; }
+.aqi-unh { background: #ef9a9a; color: #b71c1c; }
+.aqi-vunh { background: #ce93d8; color: #4a148c; }
+.aqi-haz { background: #b0bec5; color: #263238; }
+
+/* ---------- Hourly Forecast ---------- */
+.hours {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.6rem;
+  overflow-x: auto;
+  padding-bottom: 0.3rem;
+  animation: fadeIn 1s ease;
+}
+.hour {
+  flex: 0 0 auto;
+  text-align: center;
+  padding: 0.4rem 0.6rem;
+  border-radius: 8px;
+  background: #f7f7f7;
+  transition: transform 0.2s ease;
+}
+.hour:hover {
+  transform: translateY(-3px);
+}
+.hour .h-temp {
+  font-weight: bold;
+}
+
+/* ---------- Daily Forecast ---------- */
+.days {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 0.6rem;
+}
+.day {
+  text-align: center;
+  padding: 0.6rem;
+  background: #f7f7f7;
+  border-radius: 8px;
+  transition: transform 0.2s ease;
+}
+.day:hover {
+  transform: scale(1.05);
+}
+
+/* ---------- Utility ---------- */
+.muted {
+  color: #666;
+}
+.muted.small {
+  font-size: 0.8rem;
+}
+.error {
+  background: #ffcdd2;
+  color: #b71c1c;
+  padding: 0.8rem;
+  border-radius: 8px;
+  animation: popIn 0.3s ease;
+}
+.loading {
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 1rem;
+  animation: fadeIn 0.8s ease infinite alternate;
+}
+
+/* ---------- Footer ---------- */
+.foot {
+  margin-top: 1rem;
+  text-align: center;
+  color: #777;
+  font-size: 0.85rem;
+}
+/* Find and replace the .actions button block in your CSS */
+
+.actions button {
+  display: inline-flex; /* Helps align icon and text */
+  align-items: center;
+  gap: 0.5rem; /* Space between icon and text */
+  background: #f0f4f8; /* A softer, modern background */
+  color: #1976d2; /* Blue text to match your theme */
+  border: 1px solid #dbe4f0;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px; /* Slightly more rounded */
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.actions button:hover {
+  transform: translateY(-2px);
+  background: #e3f2fd;
+  border-color: #c9dff2;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* --- ADD THIS TO THE END OF YOUR APP.CSS --- */
+
+/* Modern style & animation for the Favorite button (CSS ONLY) */
+.card .row button {
+  /* Base Style */
+  background: #f0f4f8;
+  color: #1976d2;
+  border: 1px solid #dbe4f0;
+  padding: 0.4rem 0.8rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  
+  /* Smooth transition for all effects */
+  transition: all 0.2s ease-out;
+}
+
+/* Hover Effect: Lifts the button up */
+.card .row button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  border-color: #c9dff2;
+}
+
+/* Click Animation: Presses the button down */
+.card .row button:active {
+  transform: translateY(0px) scale(0.95);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+  transition-duration: 0.1s; /* Makes the press feel faster */
 }
